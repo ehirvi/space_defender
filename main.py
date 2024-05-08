@@ -10,18 +10,20 @@ def main():
     pygame.display.set_caption("Space Defender")
     GAME_CLOCK = pygame.time.Clock()
 
-    game = Game(GAME_DISPLAY)
+    new_game = Game(GAME_DISPLAY, DISPLAY_SIZE)
 
     game_running = True
     while game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_running = False
-        game.draw()
+        new_game.draw()
         pygame.display.flip()
         GAME_CLOCK.tick(60)
 
     pygame.quit()
+
+
 
 if __name__ == "__main__":
     main()
