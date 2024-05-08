@@ -1,6 +1,6 @@
 import pygame
 import utils.config as config
-from game.game import Game
+from game.space_defender import SpaceDefender
 
 
 def main():
@@ -10,14 +10,15 @@ def main():
     pygame.display.set_caption("Space Defender")
     GAME_CLOCK = pygame.time.Clock()
 
-    new_game = Game(GAME_DISPLAY, DISPLAY_SIZE)
+    game = SpaceDefender(GAME_DISPLAY, DISPLAY_SIZE)
 
     game_running = True
     while game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_running = False
-        new_game.draw()
+        game.check_events()
+        game.draw()
         pygame.display.flip()
         GAME_CLOCK.tick(60)
 
