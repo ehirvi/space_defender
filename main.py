@@ -17,8 +17,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_running = False
-        game.check_events()
-        game.draw()
+        game.update_state()
+        game.draw_graphics()
         pygame.display.flip()
         GAME_CLOCK.tick(60)
 

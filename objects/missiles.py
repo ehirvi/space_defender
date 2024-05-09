@@ -5,7 +5,11 @@ class PlayerMissile:
         self.image = image
         self.size = self.image.get_size()
         self.coords = coords
-        self.rect = self.image.get_rect()
+        self.collision_box = pygame.Rect((self.coords[0], self.coords[1]), (self.size[0] - self.size[0] / 100, self.size[1] - self.size[1] / 100))
+
+    def move(self, speed: int):
+        self.coords[1] -= speed
+        self.collision_box.move_ip(0, -speed)
 
 
 class MonsterMissile:
@@ -13,4 +17,3 @@ class MonsterMissile:
         self.image = image
         self.size = self.image.get_size()
         self.coords = coords
-        self.rect = self.image.get_rect()

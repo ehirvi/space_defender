@@ -12,15 +12,17 @@ class SpaceDefender:
         # self.COIN = objects.misc.Coin(self.COIN_IMAGE_SCALED, (0,0))
         self.start_level()
 
-    def draw(self):
+
+    def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
-        self.DISPLAY.blit(self.PLAYER.image, self.PLAYER.coords)
+        self.DISPLAY.blit(self.player.image, self.player.coords)
         for missile in self.PLAYER_MISSILES:
             self.DISPLAY.blit(missile.image, missile.coords)
         # self.DISPLAY.blit(self.PLAYER_MISSILE.image, self.PLAYER_MISSILE.coords)
         # self.DISPLAY.blit(self.MONSTER.image, self.MONSTER.coords)
         # self.DISPLAY.blit(self.MONSTER_MISSILE.image, self.MONSTER_MISSILE.coords)
         # self.DISPLAY.blit(self.COIN.image, self.COIN.coords)
+
 
     def load_images(self):
         PLAYER_IMAGE_ORIG = pygame.image.load("assets/images/player_512px.png").convert()
@@ -40,24 +42,52 @@ class SpaceDefender:
 
     
     def start_level(self):
-        self.PLAYER = characters.Player(self.PLAYER_IMAGE_SCALED,
+        self.player = characters.Player(self.PLAYER_IMAGE_SCALED,
                                         [self.DISPLAY_SIZE[0] / 2 - self.PLAYER_IMAGE_SCALED.get_width() / 2, 
-                                         self.DISPLAY_SIZE[1] - self.PLAYER_IMAGE_SCALED.get_height() - self.DISPLAY_SIZE[1] /  10])
+                                         self.DISPLAY_SIZE[1] - self.PLAYER_IMAGE_SCALED.get_height() - self.DISPLAY_SIZE[1] /  10],
+                                         self.DISPLAY_SIZE)
+        self.player_has_shot_missile = False
         self.PLAYER_MISSILES = []
         self.MONSTERS = []
         self.MONSTER_MISSILES = []
 
 
-    def check_events(self):
+    def check_user_inputs(self):
         if pygame.key.get_pressed()[pygame.K_LEFT]:
-            self.PLAYER.coords[0] -= 3
+            self.player.move("left", 5)
         if pygame.key.get_pressed()[pygame.K_RIGHT]:
-            self.PLAYER.coords[0] += 3
+            self.player.move("right", 5)
         if pygame.key.get_pressed()[pygame.K_UP]:
-            self.PLAYER.coords[1] -= 3
+            self.player.move("up", 5)
         if pygame.key.get_pressed()[pygame.K_DOWN]:
-            self.PLAYER.coords[1] += 3
+            self.player.move("down", 5)
+
+        self.player.check_out_of_bounds()
+
         if pygame.key.get_pressed()[pygame.K_SPACE]:
-            self.PLAYER_MISSILES.append(missiles.PlayerMissile(self.PLAYER_MISSILE_IMAGE_SCALED, 
-                                                               [self.PLAYER.coords[0] + self.PLAYER.size[0] / 2 - self.PLAYER_MISSILE_IMAGE_SCALED.get_width() / 2,
-                                                                self.PLAYER.coords[1] - self.PLAYER_MISSILE_IMAGE_SCALED.get_height()]))
+            if not self.player_has_shot_missile:
+                self.player_shoot_missile()
+                self.player_has_shot_missile = True
+        else:
+            self.player_has_shot_missile = False
+
+
+    def player_shoot_missile(self):
+        self.PLAYER_MISSILES.append(missiles.PlayerMissile(self.PLAYER_MISSILE_IMAGE_SCALED,
+                                                           [self.player.coords[0] + self.player.size[0] / 2 - self.PLAYER_MISSILE_IMAGE_SCALED.get_width() / 2,
+                                                            self.player.coords[1] - self.PLAYER_MISSILE_IMAGE_SCALED.get_height()]))
+
+
+    def move_npc(self):
+        for missile in self.PLAYER_MISSILES:
+            missile.move(10)
+
+
+    def detect_collisions(self):
+        None
+
+
+    def update_state(self):
+        self.check_user_inputs()
+        self.move_npc()
+        self.detect_collisions()
