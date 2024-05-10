@@ -81,6 +81,8 @@ class SpaceDefender:
     def move_npc(self):
         for missile in self.PLAYER_MISSILES:
             missile.move(10)
+            if missile.is_out_of_bounds():
+                self.PLAYER_MISSILES.remove(missile)
 
 
     def detect_collisions(self):

@@ -11,6 +11,11 @@ class PlayerMissile:
         self.coords[1] -= speed
         self.collision_box.move_ip(0, -speed)
 
+    def is_out_of_bounds(self):
+        if self.coords[1] + self.size[1] < 0:
+            return True
+        return False
+
 
 class MonsterMissile:
     def __init__(self, image: pygame.Surface, coords: list) -> None:
