@@ -6,6 +6,7 @@ class Player:
         self.size = self.image.get_size()
         self.coords = coords    # [x,y]
         self.collision_box = pygame.Rect((self.coords[0], self.coords[1]), (self.size[0], self.size[1]))
+        self.has_shot_missile = False
 
     def move(self, direction: str, speed: int):
         if direction == "left":
@@ -42,6 +43,7 @@ class Monster:
         self.coords = coords
         self.collision_box = pygame.Rect((self.coords[0], self.coords[1]), (self.size[0], self.size[1]))
         self.detection_zone = pygame.Rect((self.coords[0], self.coords[1] + self.size[1]), (self.size[0], self.DISPLAY_SIZE[1] - self.coords[1] + self.size[1]))
+        self.time_last_shot_missile = 0
 
     def move(self, speed: int):
         self.coords[1] += speed

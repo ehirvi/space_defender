@@ -12,16 +12,16 @@ class SpaceDefender:
 
     def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
-        pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box)
+        # pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box)
         self.DISPLAY.blit(self.player.image, self.player.coords)
 
         for monster in self.MONSTERS:
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box)
-            pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone)
+            # pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box)
+            # pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone)
             self.DISPLAY.blit(monster.image, monster.coords)
 
         for missile in self.PLAYER_MISSILES:
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box)
+            # pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box)
             self.DISPLAY.blit(missile.image, missile.coords)
 
         for missile in self.MONSTER_MISSILES:
@@ -49,7 +49,6 @@ class SpaceDefender:
         self.player = characters.Player(self.PLAYER_IMAGE_SCALED,
                                         [self.DISPLAY_SIZE[0] / 2 - self.PLAYER_IMAGE_SCALED.get_width() / 2, 
                                          self.DISPLAY_SIZE[1] - self.PLAYER_IMAGE_SCALED.get_height() - self.DISPLAY_SIZE[1] /  10])
-        self.player_has_shot_missile = False
         self.PLAYER_MISSILES = []
         self.MONSTERS = []
         self.MONSTER_MISSILES = []
@@ -69,11 +68,11 @@ class SpaceDefender:
         self.player.check_out_of_bounds(self.DISPLAY_SIZE)
 
         if pygame.key.get_pressed()[pygame.K_SPACE]:
-            if not self.player_has_shot_missile:
+            if not self.player.has_shot_missile:
                 self.player_shoot_missile()
-                self.player_has_shot_missile = True
+                self.player.has_shot_missile = True
         else:
-            self.player_has_shot_missile = False
+            self.player.has_shot_missile = False
 
 
     def player_shoot_missile(self):
@@ -83,14 +82,17 @@ class SpaceDefender:
         
     
     def monster_shoot_missile(self, monster: characters.Monster):
-        # if 
-        self.MONSTER_MISSILES.append(missiles.MonsterMissile(self.MONSTER_MISSILE_IMAGE_SCALED,
-                                                             [monster.coords[0] + monster.size[0] / 2 - self.MONSTER_MISSILE_IMAGE_SCALED.get_width() / 2,
-                                                              monster.coords[1] + monster.size[1]]))
+        if monster.detection_zone.colliderect(self.player.collision_box):
+            time_now = pygame.time.get_ticks()
+            if (time_now - monster.time_last_shot_missile >= 500):
+                self.MONSTER_MISSILES.append(missiles.MonsterMissile(self.MONSTER_MISSILE_IMAGE_SCALED,
+                                                                     [monster.coords[0] + monster.size[0] / 2 - self.MONSTER_MISSILE_IMAGE_SCALED.get_width() / 2,
+                                                                     monster.coords[1] + monster.size[1]]))
+                monster.time_last_shot_missile = time_now
 
 
     def spawn_monsters(self):
-        if randint(1, 50) == 1:
+        if randint(1, 70) == 1:
             self.MONSTERS.append(characters.Monster(self.MONSTER_IMAGE_SCALED,
                                                     [randint(0, self.DISPLAY_SIZE[0] - self.MONSTER_IMAGE_SCALED.get_width()),
                                                      0 - self.MONSTER_IMAGE_SCALED.get_height()],
@@ -100,7 +102,7 @@ class SpaceDefender:
     def move_npc(self):
         for monster in self.MONSTERS:
             monster.move(2)
-            # self.monster_shoot_missile(monster)
+            self.monster_shoot_missile(monster)
             if monster.is_out_of_bounds(self.DISPLAY_SIZE):
                 self.MONSTERS.remove(monster)
 
@@ -110,7 +112,7 @@ class SpaceDefender:
                 self.PLAYER_MISSILES.remove(missile)
 
         for missile in self.MONSTER_MISSILES:
-            missile.move(5)
+            missile.move(4)
             if missile.is_out_of_bounds(self.DISPLAY_SIZE):
                 self.MONSTER_MISSILES.remove(missile)
 
