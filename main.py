@@ -11,8 +11,8 @@ def main():
     GAME_CLOCK = pygame.time.Clock()
 
     game = SpaceDefender(GAME_DISPLAY, DISPLAY_SIZE)
-
     game_running = True
+
     while game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -27,4 +27,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()  
+    main()

@@ -118,7 +118,20 @@ class SpaceDefender:
 
 
     def detect_collisions(self):
-        None
+        monster_collision_boxes = [monster.collision_box for monster in self.MONSTERS]
+        monster_missile_collision_boxes = [monster_missile.collision_box for monster_missile in self.MONSTER_MISSILES]
+
+        for missile in self.PLAYER_MISSILES:
+            collisions = missile.collision_box.collidelistall(monster_collision_boxes)
+            if len(collisions) != 0:
+                pygame.quit()
+                # remove the monster from monsters list
+
+        if self.player.collision_box.collidelist(monster_missile_collision_boxes) != -1:
+            pygame.quit()
+
+        if self.player.collision_box.collidelist(monster_collision_boxes) != -1:
+            pygame.quit()   # think of something better than crashing the game
 
 
     def update_state(self):
