@@ -3,7 +3,8 @@ from random import randint
 from objects import characters, missiles, misc
 
 class SpaceDefender:
-    def __init__(self, DISPLAY: pygame.Surface, DISPLAY_SIZE: tuple) -> None:
+    def __init__(self, DISPLAY: pygame.Surface, DISPLAY_SIZE: tuple, dev_mode: bool) -> None:
+        self.dev_mode = dev_mode
         self.DISPLAY = DISPLAY
         self.DISPLAY_SIZE = DISPLAY_SIZE
         self.load_images()
@@ -13,20 +14,31 @@ class SpaceDefender:
     def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
         self.DISPLAY.blit(self.player.image, self.player.coords)
-        pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box, 1)
+        if self.dev_mode:
+            pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box, 1)
 
         for monster in self.MONSTERS:
             self.DISPLAY.blit(monster.image, monster.coords)
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box, 1)
-            pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone, 1)
+            if self.dev_mode:
+                pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box, 1)
+                pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone, 1)
 
         for missile in self.PLAYER_MISSILES:
             self.DISPLAY.blit(missile.image, missile.coords)
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+            if self.dev_mode:
+                pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
 
         for missile in self.MONSTER_MISSILES:
             self.DISPLAY.blit(missile.image, missile.coords)
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+            if self.dev_mode:
+                pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+
+
+    def draw_game_over_screen(self):
+        font = pygame.font.SysFont("Arial", 30, True)
+        text = font.render("GAME OVER, YOU DIED...", True, (255,255,255))
+        self.DISPLAY.fill((0,0,0))
+        self.DISPLAY.blit(text, (self.DISPLAY_SIZE[0] / 2 - text.get_width() / 2, self.DISPLAY_SIZE[1] / 2 - text.get_height() / 2))
 
 
     def load_images(self):
@@ -128,11 +140,11 @@ class SpaceDefender:
 
         for missile in self.MONSTER_MISSILES:
             if missile.collision_box.colliderect(self.player.collision_box):
-                self.alive = False   # some kind of "you died, game over" screen?
+                self.alive = False
 
         for monster in self.MONSTERS:
             if monster.collision_box.colliderect(self.player.collision_box):
-                self.alive = False   # some kind of "you died, game over" screen?
+                self.alive = False
 
 
     def update_state(self):
@@ -141,3 +153,6 @@ class SpaceDefender:
             self.spawn_monsters()
             self.move_npc()
             self.detect_collisions()
+            self.draw_graphics()
+        else:
+            self.draw_game_over_screen()
