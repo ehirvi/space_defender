@@ -12,16 +12,16 @@ class SpaceDefender:
 
     def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
-        # pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box)
+        pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box)
         self.DISPLAY.blit(self.player.image, self.player.coords)
 
         for monster in self.MONSTERS:
-            # pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box)
-            # pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone)
+            pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box)
+            pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone)
             self.DISPLAY.blit(monster.image, monster.coords)
 
         for missile in self.PLAYER_MISSILES:
-            # pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box)
+            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box)
             self.DISPLAY.blit(missile.image, missile.coords)
 
         for missile in self.MONSTER_MISSILES:
@@ -118,20 +118,19 @@ class SpaceDefender:
 
 
     def detect_collisions(self):
-        monster_collision_boxes = [monster.collision_box for monster in self.MONSTERS]
-        monster_missile_collision_boxes = [monster_missile.collision_box for monster_missile in self.MONSTER_MISSILES]
-
         for missile in self.PLAYER_MISSILES:
-            collisions = missile.collision_box.collidelistall(monster_collision_boxes)
-            if len(collisions) != 0:
+            for monster in self.MONSTERS:
+                if missile.collision_box.colliderect(monster.collision_box):
+                    self.MONSTERS.remove(monster)
+                    self.PLAYER_MISSILES.remove(missile)
+
+        for missile in self.MONSTER_MISSILES:
+            if missile.collision_box.colliderect(self.player.collision_box):
                 pygame.quit()
-                # remove the monster from monsters list
 
-        if self.player.collision_box.collidelist(monster_missile_collision_boxes) != -1:
-            pygame.quit()
-
-        if self.player.collision_box.collidelist(monster_collision_boxes) != -1:
-            pygame.quit()   # think of something better than crashing the game
+        for monster in self.MONSTERS:
+            if monster.collision_box.colliderect(self.player.collision_box):
+                pygame.quit()
 
 
     def update_state(self):
