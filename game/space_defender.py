@@ -12,20 +12,21 @@ class SpaceDefender:
 
     def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
-        pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box)
         self.DISPLAY.blit(self.player.image, self.player.coords)
+        pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box, 1)
 
         for monster in self.MONSTERS:
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box)
-            pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone)
             self.DISPLAY.blit(monster.image, monster.coords)
+            pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box, 1)
+            pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone, 1)
 
         for missile in self.PLAYER_MISSILES:
-            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box)
             self.DISPLAY.blit(missile.image, missile.coords)
+            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
 
         for missile in self.MONSTER_MISSILES:
             self.DISPLAY.blit(missile.image, missile.coords)
+            pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
 
 
     def load_images(self):
@@ -53,6 +54,7 @@ class SpaceDefender:
         self.MONSTERS = []
         self.MONSTER_MISSILES = []
         self.COINS = []
+        self.alive = True
 
 
     def check_user_inputs(self):
@@ -126,15 +128,16 @@ class SpaceDefender:
 
         for missile in self.MONSTER_MISSILES:
             if missile.collision_box.colliderect(self.player.collision_box):
-                pygame.quit()
+                self.alive = False   # some kind of "you died, game over" screen?
 
         for monster in self.MONSTERS:
             if monster.collision_box.colliderect(self.player.collision_box):
-                pygame.quit()
+                self.alive = False   # some kind of "you died, game over" screen?
 
 
     def update_state(self):
-        self.check_user_inputs()
-        self.spawn_monsters()
-        self.move_npc()
-        self.detect_collisions()
+        if self.alive:
+            self.check_user_inputs()
+            self.spawn_monsters()
+            self.move_npc()
+            self.detect_collisions()
