@@ -52,7 +52,10 @@ class Monster:
         self.size = self.image.get_size()
         self.coords = coords
         self.update_collision_box()
-        self.detection_zone = pygame.Rect((self.coords[0], self.coords[1] + self.size[1]), (self.size[0], self.DISPLAY_SIZE[1] - self.coords[1] + self.size[1]))
+        self.detection_zone = pygame.Rect(self.coords[0],
+                                          self.coords[1] + self.size[1],
+                                          self.size[0],
+                                          self.DISPLAY_SIZE[1] - self.coords[1] + self.size[1])
         self.time_last_shot_missile = 0
 
     def update_collision_box(self):
@@ -67,7 +70,10 @@ class Monster:
     def move(self, speed: int):
         self.coords[1] += speed
         self.update_collision_box()
-        self.detection_zone.update((self.coords[0], self.coords[1] + self.size[1]), (self.size[0], self.DISPLAY_SIZE[1] - self.coords[1] + self.size[1]))
+        self.detection_zone.update(self.coords[0],
+                                   self.coords[1] + self.size[1],
+                                   self.size[0],
+                                   self.DISPLAY_SIZE[1] - self.coords[1] + self.size[1])
 
     def is_out_of_bounds(self, DISPLAY_SIZE: tuple):
         if self.coords[1] > DISPLAY_SIZE[1]:

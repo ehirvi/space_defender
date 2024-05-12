@@ -54,8 +54,8 @@ class SpaceDefender:
         MONSTER_MISSILE_IMAGE_ORIG = pygame.image.load("assets/images/monster_missile_512px.png").convert()
         self.MONSTER_MISSILE_IMAGE_SCALED = pygame.transform.scale(MONSTER_MISSILE_IMAGE_ORIG, (MONSTER_MISSILE_IMAGE_ORIG.get_width() / 16, MONSTER_MISSILE_IMAGE_ORIG.get_height() / 16))
 
-        COIN_IMAGE_ORIG = pygame.image.load("assets/images/coin_512px.png").convert()
-        self.COIN_IMAGE_SCALED = pygame.transform.scale(COIN_IMAGE_ORIG, (COIN_IMAGE_ORIG.get_width() / 24, COIN_IMAGE_ORIG.get_height() / 24))
+        # COIN_IMAGE_ORIG = pygame.image.load("assets/images/coin_512px.png").convert()
+        # self.COIN_IMAGE_SCALED = pygame.transform.scale(COIN_IMAGE_ORIG, (COIN_IMAGE_ORIG.get_width() / 24, COIN_IMAGE_ORIG.get_height() / 24))
 
     
     def start_level(self):
@@ -65,7 +65,7 @@ class SpaceDefender:
         self.PLAYER_MISSILES = []
         self.MONSTERS = []
         self.MONSTER_MISSILES = []
-        self.COINS = []
+        # self.COINS = []
         self.alive = True
 
 
