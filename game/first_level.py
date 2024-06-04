@@ -2,46 +2,48 @@ import pygame
 from random import randint
 from objects import characters, missiles, misc
 
-class SpaceDefender:
+class FirstLevel:
     def __init__(self, DISPLAY: pygame.Surface, DISPLAY_SIZE: tuple, dev_mode: bool) -> None:
         self.dev_mode = dev_mode
         self.DISPLAY = DISPLAY
         self.DISPLAY_SIZE = DISPLAY_SIZE
-        self.load_images()
+        self.load_images_and_fonts()
         self.start_level()
 
 
     def draw_graphics(self):
         self.DISPLAY.fill((0,0,0))
-        self.DISPLAY.blit(self.player.image, self.player.coords)
-        if self.dev_mode:
-            pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box, 1)
 
-        for monster in self.MONSTERS:
-            self.DISPLAY.blit(monster.image, monster.coords)
+        if self.alive:
+            self.DISPLAY.blit(self.player.image, self.player.coords)
             if self.dev_mode:
-                pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box, 1)
-                pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone, 1)
+                pygame.draw.rect(self.DISPLAY, (0, 255, 0), self.player.collision_box, 1)
 
-        for missile in self.PLAYER_MISSILES:
-            self.DISPLAY.blit(missile.image, missile.coords)
-            if self.dev_mode:
-                pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+            for monster in self.MONSTERS:
+                self.DISPLAY.blit(monster.image, monster.coords)
+                if self.dev_mode:
+                    pygame.draw.rect(self.DISPLAY, (255, 0, 0), monster.collision_box, 1)
+                    pygame.draw.rect(self.DISPLAY, (100, 100, 100), monster.detection_zone, 1)
 
-        for missile in self.MONSTER_MISSILES:
-            self.DISPLAY.blit(missile.image, missile.coords)
-            if self.dev_mode:
-                pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+            for missile in self.PLAYER_MISSILES:
+                self.DISPLAY.blit(missile.image, missile.coords)
+                if self.dev_mode:
+                    pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+
+            for missile in self.MONSTER_MISSILES:
+                self.DISPLAY.blit(missile.image, missile.coords)
+                if self.dev_mode:
+                    pygame.draw.rect(self.DISPLAY, (255, 0, 0), missile.collision_box, 1)
+
+        else:
+            self.game_over_screen()
 
 
-    def draw_game_over_screen(self):
-        font = pygame.font.SysFont("Arial", 30, True)
-        text = font.render("GAME OVER, YOU DIED...", True, (255,255,255))
-        self.DISPLAY.fill((0,0,0))
-        self.DISPLAY.blit(text, (self.DISPLAY_SIZE[0] / 2 - text.get_width() / 2, self.DISPLAY_SIZE[1] / 2 - text.get_height() / 2))
+    def game_over_screen(self):
+        self.DISPLAY.blit(self.GAME_OVER_TEXT, (self.DISPLAY_SIZE[0] / 2 - self.GAME_OVER_TEXT.get_width() / 2, self.DISPLAY_SIZE[1] / 2 - self.GAME_OVER_TEXT.get_height() / 2))
 
 
-    def load_images(self):
+    def load_images_and_fonts(self):
         PLAYER_IMAGE_ORIG = pygame.image.load("assets/images/player_512px.png").convert()
         self.PLAYER_IMAGE_SCALED = pygame.transform.scale(PLAYER_IMAGE_ORIG, (PLAYER_IMAGE_ORIG.get_width() / 8, PLAYER_IMAGE_ORIG.get_height() / 8))
 
@@ -57,6 +59,9 @@ class SpaceDefender:
         # COIN_IMAGE_ORIG = pygame.image.load("assets/images/coin_512px.png").convert()
         # self.COIN_IMAGE_SCALED = pygame.transform.scale(COIN_IMAGE_ORIG, (COIN_IMAGE_ORIG.get_width() / 24, COIN_IMAGE_ORIG.get_height() / 24))
 
+        self.FONT = pygame.font.SysFont("Arial", 30, True)
+        self.GAME_OVER_TEXT = self.FONT.render("GAME OVER, YOU DIED...", True, (255,255,255))
+
     
     def start_level(self):
         self.player = characters.Player(self.PLAYER_IMAGE_SCALED,
@@ -68,25 +73,36 @@ class SpaceDefender:
         # self.COINS = []
         self.alive = True
 
+        self.paused = False
+        self.player_has_pressed_escape = False
+
 
     def check_user_inputs(self):
-        if pygame.key.get_pressed()[pygame.K_LEFT]:
-            self.player.move("left", 5)
-        if pygame.key.get_pressed()[pygame.K_RIGHT]:
-            self.player.move("right", 5)
-        if pygame.key.get_pressed()[pygame.K_UP]:
-            self.player.move("up", 5)
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
-            self.player.move("down", 5)
-
-        self.player.check_out_of_bounds(self.DISPLAY_SIZE)
-
-        if pygame.key.get_pressed()[pygame.K_SPACE]:
-            if not self.player.has_shot_missile:
-                self.player_shoot_missile()
-                self.player.has_shot_missile = True
+        if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            if not self.player_has_pressed_escape:
+                self.player_has_pressed_escape = True
+                self.paused = not self.paused
         else:
-            self.player.has_shot_missile = False
+            self.player_has_pressed_escape = False
+
+        if not self.paused:
+            if pygame.key.get_pressed()[pygame.K_LEFT]:
+                self.player.move("left", 5)
+            if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                self.player.move("right", 5)
+            if pygame.key.get_pressed()[pygame.K_UP]:
+                self.player.move("up", 5)
+            if pygame.key.get_pressed()[pygame.K_DOWN]:
+                self.player.move("down", 5)
+
+            self.player.check_out_of_bounds(self.DISPLAY_SIZE)
+
+            if pygame.key.get_pressed()[pygame.K_SPACE]:
+                if not self.player.has_shot_missile:
+                    self.player_shoot_missile()
+                    self.player.has_shot_missile = True
+            else:
+                self.player.has_shot_missile = False
 
 
     def player_shoot_missile(self):
@@ -150,9 +166,9 @@ class SpaceDefender:
     def update_state(self):
         if self.alive:
             self.check_user_inputs()
-            self.spawn_monsters()
-            self.move_npc()
-            self.detect_collisions()
-            self.draw_graphics()
-        else:
-            self.draw_game_over_screen()
+            if not self.paused:
+                self.spawn_monsters()
+                self.move_npc()
+                self.detect_collisions()
+        self.draw_graphics()
+
