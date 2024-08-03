@@ -1,8 +1,8 @@
-import json
+SETTINGS = {
+    "width": 640,
+    "height": 480,
+    "dev_mode": False
+    # "resolution_large": "1280;720"
+}
 
-def load_settings():
-    with open("config.json") as file:
-        content = file.read()
-        settings = json.loads(content)
-        resolution = settings["resolution"].split(";")
-        return (int(resolution[0]), int(resolution[1]))
+DISPLAY_SIZE = (SETTINGS["width"], SETTINGS["height"]) 

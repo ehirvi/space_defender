@@ -1,12 +1,14 @@
 import pygame
+import global_state as gs
+import utils.config as config
 from random import randint
 from objects import characters, missiles, misc
 
 class FirstLevel:
-    def __init__(self, DISPLAY: pygame.Surface, DISPLAY_SIZE: tuple, dev_mode: bool) -> None:
-        self.dev_mode = dev_mode
-        self.DISPLAY = DISPLAY
-        self.DISPLAY_SIZE = DISPLAY_SIZE
+    def __init__(self) -> None:
+        self.dev_mode = gs.GLOBAL_STATE.DEV_MODE
+        self.DISPLAY = gs.GLOBAL_STATE.GAME_DISPLAY
+        self.DISPLAY_SIZE = config.DISPLAY_SIZE
         self.load_images_and_fonts()
         self.start_level()
 
